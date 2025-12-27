@@ -31,6 +31,14 @@ export DATABASE_URL="postgres://postgres:postgres@localhost:5432/findmyphone?ssl
 go run ./cmd/server
 ```
 
+**Troubleshooting:** If Docker cleaned up old images and `docker-compose up -d` fails with a
+`No such image` message, rebuild the app image before starting containers:
+```bash
+docker-compose down --remove-orphans
+docker-compose build
+docker-compose up -d
+```
+
 ### Run with SQLite (quick start)
 ```bash
 export DATABASE_TYPE=sqlite
