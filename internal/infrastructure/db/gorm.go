@@ -3,6 +3,7 @@ package db
 import (
 	"fmt"
 	"log"
+	"time"
 
 	"findMyPhone/internal/domain"
 	"findMyPhone/internal/infrastructure/config"
@@ -29,15 +30,31 @@ func NewGorm(cfg *config.Config) (*gorm.DB, error) {
 		return nil, fmt.Errorf("unsupported database type: %s", cfg.DatabaseType)
 	}
 
-	db, err := gorm.Open(dialector, &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
-	})
+	var db *gorm.DB
+	const (
+		maxAttempts = 5
+		baseDelay   = 2 * time.Second
+	)
+
+	for attempt := 1; attempt <= maxAttempts; attempt++ {
+		db, err = gorm.Open(dialector, &gorm.Config{
+			Logger: logger.Default.LogMode(logger.Info),
+		})
+		if err == nil {
+			break
+		}
+		log.Printf("failed to connect to database (attempt %d/%d): %v", attempt, maxAttempts, err)
+		time.Sleep(time.Duration(attempt) * baseDelay)
+	}
 	if err != nil {
 		return nil, err
 	}
 
 	sqlDB, err := db.DB()
 	if err != nil {
+		return nil, err
+	}
+	if err := sqlDB.Ping(); err != nil {
 		return nil, err
 	}
 	sqlDB.SetMaxIdleConns(10)
