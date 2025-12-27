@@ -17,7 +17,7 @@ type Config struct {
 // Load initializes viper and reads environment variables.
 func Load() (*Config, error) {
 	viper.AutomaticEnv()
-	viper.SetDefault("SERVER_ADDRESS", ":8080")
+	viper.SetDefault("SERVER_ADDRESS", ":8081")
 	viper.SetDefault("SHUTDOWN_GRACE", 15*time.Second)
 	viper.SetDefault("DATABASE_TYPE", "postgres")
 	viper.SetDefault("DATABASE_URL", "postgres://postgres:postgres@localhost:5432/findmyphone?sslmode=disable")

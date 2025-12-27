@@ -19,7 +19,7 @@ Production-ready REST API built with Gin and Clean Architecture for tracking dev
 ### Environment Variables
 | Name | Default | Description |
 | --- | --- | --- |
-| `SERVER_ADDRESS` | `:8080` | Address the HTTP server listens on |
+| `SERVER_ADDRESS` | `:8081` | Address the HTTP server listens on |
 | `DATABASE_TYPE` | `postgres` | `postgres` or `sqlite` |
 | `DATABASE_URL` | `postgres://postgres:postgres@localhost:5432/findmyphone?sslmode=disable` | Connection string |
 | `SHUTDOWN_GRACE` | `15s` | Graceful shutdown timeout |
@@ -49,7 +49,7 @@ Base path: `/api/v1`
 ### Create User
 `POST /api/v1/users`
 ```bash
-curl -X POST http://localhost:8080/api/v1/users \
+curl -X POST http://localhost:8081/api/v1/users \
   -H "Content-Type: application/json" \
   -d '{"name":"Alice","device_id":"device-123","phone":"+12025550123","backup_phone":"+12025550124"}'
 ```
@@ -57,13 +57,13 @@ curl -X POST http://localhost:8080/api/v1/users \
 ### Get User by device_id
 `GET /api/v1/users/by-device/:device_id`
 ```bash
-curl http://localhost:8080/api/v1/users/by-device/device-123
+curl http://localhost:8081/api/v1/users/by-device/device-123
 ```
 
 ### Create Device
 `POST /api/v1/devices`
 ```bash
-curl -X POST http://localhost:8080/api/v1/devices \
+curl -X POST http://localhost:8081/api/v1/devices \
   -H "Content-Type: application/json" \
   -d '{"device_id":"device-123","imei":"123456789012345","generation":"gen1","name":"Pixel","lost":false}'
 ```
@@ -71,7 +71,7 @@ curl -X POST http://localhost:8080/api/v1/devices \
 ### Create Log
 `POST /api/v1/logs`
 ```bash
-curl -X POST http://localhost:8080/api/v1/logs \
+curl -X POST http://localhost:8081/api/v1/logs \
   -H "Content-Type: application/json" \
   -d '{"device_id":"device-123","longitude":-122.1,"latitude":37.4}'
 ```
@@ -79,7 +79,7 @@ curl -X POST http://localhost:8080/api/v1/logs \
 ### Get Last Log by device_id
 `GET /api/v1/logs/last/:device_id`
 ```bash
-curl http://localhost:8080/api/v1/logs/last/device-123
+curl http://localhost:8081/api/v1/logs/last/device-123
 ```
 
 ## Project Structure
