@@ -68,6 +68,14 @@ curl -X POST http://localhost:8081/api/v1/users \
 curl http://localhost:8081/api/v1/users/by-device/device-123
 ```
 
+### Update User by device_id
+`POST /api/v1/users/by-device/:device_id`
+```bash
+curl -X POST http://localhost:8081/api/v1/users/by-device/device-123 \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Alice Updated","phone":"+12025550123","backup_phone":"+12025550124"}'
+```
+
 ### Create Device
 `POST /api/v1/devices`
 ```bash
