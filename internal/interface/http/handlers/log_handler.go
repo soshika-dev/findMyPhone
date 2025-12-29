@@ -34,7 +34,7 @@ func (h *LogHandler) createLog(c *gin.Context) {
 	var req dtos.CreateLogRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		h.logger.Warn("invalid log payload", zap.Error(err))
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		sendResponse(c, http.StatusBadRequest, "invalid log payload: "+err.Error(), nil)
 		return
 	}
 
@@ -49,13 +49,15 @@ func (h *LogHandler) createLog(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, dtos.LogResponse{
+	response := dtos.LogResponse{
 		ID:        logEntry.ID,
 		DeviceID:  logEntry.DeviceID,
 		Longitude: logEntry.Longitude,
 		Latitude:  logEntry.Latitude,
 		CreatedAt: logEntry.CreatedAt.Format(time.RFC3339),
-	})
+	}
+
+	sendResponse(c, http.StatusCreated, "log created successfully", response)
 }
 
 func (h *LogHandler) getLastLog(c *gin.Context) {
@@ -66,23 +68,25 @@ func (h *LogHandler) getLastLog(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, dtos.LogResponse{
+	response := dtos.LogResponse{
 		ID:        logEntry.ID,
 		DeviceID:  logEntry.DeviceID,
 		Longitude: logEntry.Longitude,
 		Latitude:  logEntry.Latitude,
 		CreatedAt: logEntry.CreatedAt.Format(time.RFC3339),
-	})
+	}
+
+	sendResponse(c, http.StatusOK, "last log fetched successfully", response)
 }
 
 func (h *LogHandler) handleError(c *gin.Context, err error) {
 	switch {
 	case errors.Is(err, domain.ErrInvalidInput):
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		sendResponse(c, http.StatusBadRequest, err.Error(), nil)
 	case errors.Is(err, domain.ErrNotFound):
-		c.JSON(http.StatusNotFound, gin.H{"error": "resource not found"})
+		sendResponse(c, http.StatusNotFound, "resource not found", nil)
 	default:
 		h.logger.Error("internal error", zap.Error(err))
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		sendResponse(c, http.StatusInternalServerError, "internal server error", nil)
 	}
 }

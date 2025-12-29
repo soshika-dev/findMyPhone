@@ -32,7 +32,7 @@ func (h *DeviceHandler) createDevice(c *gin.Context) {
 	var req dtos.CreateDeviceRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		h.logger.Warn("invalid device payload", zap.Error(err))
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		sendResponse(c, http.StatusBadRequest, "invalid device payload: "+err.Error(), nil)
 		return
 	}
 
@@ -49,24 +49,26 @@ func (h *DeviceHandler) createDevice(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, dtos.DeviceResponse{
+	response := dtos.DeviceResponse{
 		ID:         device.ID,
 		DeviceID:   device.DeviceID,
 		IMEI:       device.IMEI,
 		Generation: device.Generation,
 		Name:       device.Name,
 		Lost:       device.Lost,
-	})
+	}
+
+	sendResponse(c, http.StatusCreated, "device created successfully", response)
 }
 
 func (h *DeviceHandler) handleError(c *gin.Context, err error) {
 	switch {
 	case errors.Is(err, domain.ErrInvalidInput):
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		sendResponse(c, http.StatusBadRequest, err.Error(), nil)
 	case errors.Is(err, domain.ErrConflict):
-		c.JSON(http.StatusConflict, gin.H{"error": "resource conflict"})
+		sendResponse(c, http.StatusConflict, "resource conflict", nil)
 	default:
 		h.logger.Error("internal error", zap.Error(err))
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		sendResponse(c, http.StatusInternalServerError, "internal server error", nil)
 	}
 }

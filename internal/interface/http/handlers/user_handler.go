@@ -33,7 +33,7 @@ func (h *UserHandler) createUser(c *gin.Context) {
 	var req dtos.CreateUserRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		h.logger.Warn("invalid user payload", zap.Error(err))
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		sendResponse(c, http.StatusBadRequest, "invalid user payload: "+err.Error(), nil)
 		return
 	}
 
@@ -48,13 +48,16 @@ func (h *UserHandler) createUser(c *gin.Context) {
 		h.handleError(c, err)
 		return
 	}
-	c.JSON(http.StatusCreated, dtos.UserResponse{
+
+	response := dtos.UserResponse{
 		ID:          user.ID,
 		Name:        user.Name,
 		DeviceID:    user.DeviceID,
 		Phone:       user.Phone,
 		BackupPhone: user.BackupPhone,
-	})
+	}
+
+	sendResponse(c, http.StatusCreated, "user created successfully", response)
 }
 
 func (h *UserHandler) getUserByDeviceID(c *gin.Context) {
@@ -64,25 +67,28 @@ func (h *UserHandler) getUserByDeviceID(c *gin.Context) {
 		h.handleError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, dtos.UserResponse{
+
+	response := dtos.UserResponse{
 		ID:          user.ID,
 		Name:        user.Name,
 		DeviceID:    user.DeviceID,
 		Phone:       user.Phone,
 		BackupPhone: user.BackupPhone,
-	})
+	}
+
+	sendResponse(c, http.StatusOK, "user fetched successfully", response)
 }
 
 func (h *UserHandler) handleError(c *gin.Context, err error) {
 	switch {
 	case errors.Is(err, domain.ErrInvalidInput):
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		sendResponse(c, http.StatusBadRequest, err.Error(), nil)
 	case errors.Is(err, domain.ErrNotFound):
-		c.JSON(http.StatusNotFound, gin.H{"error": "resource not found"})
+		sendResponse(c, http.StatusNotFound, "resource not found", nil)
 	case errors.Is(err, domain.ErrConflict):
-		c.JSON(http.StatusConflict, gin.H{"error": "resource conflict"})
+		sendResponse(c, http.StatusConflict, "resource conflict", nil)
 	default:
 		h.logger.Error("internal error", zap.Error(err))
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		sendResponse(c, http.StatusInternalServerError, "internal server error", nil)
 	}
 }
