@@ -1,10 +1,10 @@
 package repository
 
 import (
-	"errors"
+        "errors"
 
-	"github.com/jackc/pgconn"
-	"gorm.io/gorm"
+        "github.com/jackc/pgx/v5/pgconn"
+        "gorm.io/gorm"
 )
 
 // isDuplicateError reports whether the provided error originates from a duplicate key violation.
