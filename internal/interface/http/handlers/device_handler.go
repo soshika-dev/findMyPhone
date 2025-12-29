@@ -26,7 +26,7 @@ func NewDeviceHandler(uc *usecase.DeviceUseCase, logger *zap.Logger) *DeviceHand
 // RegisterRoutes sets up device routes.
 func (h *DeviceHandler) RegisterRoutes(rg *gin.RouterGroup) {
 	rg.POST("/devices", h.createDevice)
-	rg.PUT("/devices/:device_id", h.updateDevice)
+	rg.POST("/devices/:device_id", h.updateDevice)
 }
 
 func (h *DeviceHandler) createDevice(c *gin.Context) {
