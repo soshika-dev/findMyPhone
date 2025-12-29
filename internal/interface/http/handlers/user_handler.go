@@ -25,9 +25,10 @@ func NewUserHandler(uc *usecase.UserUseCase, logger *zap.Logger) *UserHandler {
 
 // RegisterRoutes registers user routes.
 func (h *UserHandler) RegisterRoutes(rg *gin.RouterGroup) {
-	rg.POST("/users", h.createUser)
-	rg.GET("/users/by-device/:device_id", h.getUserByDeviceID)
-	rg.POST("/users/:device_id", h.updateUser)
+        rg.POST("/users", h.createUser)
+        rg.GET("/users/by-device/:device_id", h.getUserByDeviceID)
+        rg.POST("/users/by-device/:device_id", h.updateUser)
+        rg.POST("/users/:device_id", h.updateUser)
 }
 
 func (h *UserHandler) createUser(c *gin.Context) {
