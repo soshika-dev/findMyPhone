@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"errors"
 
 	"findMyPhone/internal/domain"
 	domainRepo "findMyPhone/internal/domain/repository"
@@ -23,7 +22,7 @@ func NewDeviceRepository(db *gorm.DB) domainRepo.DeviceRepository {
 // Create inserts a new device.
 func (r *DeviceRepositoryGorm) Create(ctx context.Context, device *domain.Device) error {
 	if err := r.db.WithContext(ctx).Create(device).Error; err != nil {
-		if errors.Is(err, gorm.ErrDuplicatedKey) {
+		if isDuplicateError(err) {
 			return domain.ErrConflict
 		}
 		return err
@@ -61,7 +60,7 @@ func (r *DeviceRepositoryGorm) UpdateByDeviceID(ctx context.Context, deviceID st
 	}
 
 	if err := r.db.WithContext(ctx).Model(&existing).Updates(updates).Error; err != nil {
-		if errors.Is(err, gorm.ErrDuplicatedKey) {
+		if isDuplicateError(err) {
 			return nil, domain.ErrConflict
 		}
 		return nil, err
