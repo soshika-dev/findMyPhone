@@ -11,7 +11,6 @@ import (
 	"findMyPhone/internal/domain"
 	"findMyPhone/internal/infrastructure/config"
 
-	"github.com/jackc/pgx/v5/stdlib"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
