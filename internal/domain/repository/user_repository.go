@@ -10,4 +10,5 @@ import (
 type UserRepository interface {
 	Create(ctx context.Context, user *domain.User) error
 	GetByDeviceID(ctx context.Context, deviceID string) (*domain.User, error)
+	UpdateByDeviceID(ctx context.Context, deviceID string, user *domain.User) (*domain.User, error)
 }

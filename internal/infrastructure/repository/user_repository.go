@@ -42,3 +42,33 @@ func (r *UserRepositoryGorm) GetByDeviceID(ctx context.Context, deviceID string)
 	}
 	return &user, nil
 }
+
+// UpdateByDeviceID updates a user tied to the provided device identifier.
+func (r *UserRepositoryGorm) UpdateByDeviceID(ctx context.Context, deviceID string, user *domain.User) (*domain.User, error) {
+	var existing domain.User
+	if err := r.db.WithContext(ctx).Where("device_id = ?", deviceID).First(&existing).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, domain.ErrNotFound
+		}
+		return nil, err
+	}
+
+	updates := map[string]interface{}{
+		"name":         user.Name,
+		"phone":        user.Phone,
+		"backup_phone": user.BackupPhone,
+	}
+
+	if err := r.db.WithContext(ctx).Model(&existing).Updates(updates).Error; err != nil {
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
+			return nil, domain.ErrConflict
+		}
+		return nil, err
+	}
+
+	if err := r.db.WithContext(ctx).Where("device_id = ?", deviceID).First(&existing).Error; err != nil {
+		return nil, err
+	}
+
+	return &existing, nil
+}

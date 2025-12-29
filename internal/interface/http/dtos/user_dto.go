@@ -8,6 +8,13 @@ type CreateUserRequest struct {
 	BackupPhone string `json:"backup_phone"`
 }
 
+// UpdateUserRequest represents payload to update a user.
+type UpdateUserRequest struct {
+	Name        string `json:"name" binding:"required"`
+	Phone       string `json:"phone" binding:"required"`
+	BackupPhone string `json:"backup_phone"`
+}
+
 // UserResponse represents user output.
 type UserResponse struct {
 	ID          uint   `json:"id"`
