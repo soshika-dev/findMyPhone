@@ -36,3 +36,15 @@ func (uc *UserUseCase) GetUserByDeviceID(ctx context.Context, deviceID string) (
 	}
 	return uc.repo.GetByDeviceID(ctx, deviceID)
 }
+
+// UpdateUser updates fields for the user associated with the deviceID.
+func (uc *UserUseCase) UpdateUser(ctx context.Context, deviceID string, user *domain.User) (*domain.User, error) {
+	if user == nil || deviceID == "" {
+		return nil, domain.ErrInvalidInput
+	}
+	if user.Name == "" || user.Phone == "" {
+		return nil, fmt.Errorf("%w: name and phone are required", domain.ErrInvalidInput)
+	}
+
+	return uc.repo.UpdateByDeviceID(ctx, deviceID, user)
+}

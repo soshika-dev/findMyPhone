@@ -36,3 +36,15 @@ func (uc *DeviceUseCase) GetDeviceByDeviceID(ctx context.Context, deviceID strin
 	}
 	return uc.repo.GetByDeviceID(ctx, deviceID)
 }
+
+// UpdateDevice updates an existing device identified by deviceID.
+func (uc *DeviceUseCase) UpdateDevice(ctx context.Context, deviceID string, device *domain.Device) (*domain.Device, error) {
+	if device == nil || deviceID == "" {
+		return nil, domain.ErrInvalidInput
+	}
+	if device.IMEI == "" {
+		return nil, fmt.Errorf("%w: imei is required", domain.ErrInvalidInput)
+	}
+
+	return uc.repo.UpdateByDeviceID(ctx, deviceID, device)
+}

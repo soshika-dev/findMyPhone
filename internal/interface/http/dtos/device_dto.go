@@ -9,6 +9,14 @@ type CreateDeviceRequest struct {
 	Lost       bool   `json:"lost"`
 }
 
+// UpdateDeviceRequest represents payload to update device details.
+type UpdateDeviceRequest struct {
+	IMEI       string `json:"imei" binding:"required"`
+	Generation string `json:"generation"`
+	Name       string `json:"name"`
+	Lost       bool   `json:"lost"`
+}
+
 // DeviceResponse is output for device.
 type DeviceResponse struct {
 	ID         uint   `json:"id"`

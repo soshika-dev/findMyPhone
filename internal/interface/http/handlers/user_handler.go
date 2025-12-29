@@ -27,6 +27,7 @@ func NewUserHandler(uc *usecase.UserUseCase, logger *zap.Logger) *UserHandler {
 func (h *UserHandler) RegisterRoutes(rg *gin.RouterGroup) {
 	rg.POST("/users", h.createUser)
 	rg.GET("/users/by-device/:device_id", h.getUserByDeviceID)
+	rg.PUT("/users/:device_id", h.updateUser)
 }
 
 func (h *UserHandler) createUser(c *gin.Context) {
@@ -77,6 +78,39 @@ func (h *UserHandler) getUserByDeviceID(c *gin.Context) {
 	}
 
 	sendResponse(c, http.StatusOK, "user fetched successfully", response)
+}
+
+func (h *UserHandler) updateUser(c *gin.Context) {
+	deviceID := c.Param("device_id")
+
+	var req dtos.UpdateUserRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		h.logger.Warn("invalid user payload", zap.Error(err))
+		sendResponse(c, http.StatusBadRequest, "invalid user payload: "+err.Error(), nil)
+		return
+	}
+
+	user := &domain.User{
+		Name:        req.Name,
+		Phone:       req.Phone,
+		BackupPhone: req.BackupPhone,
+	}
+
+	updated, err := h.uc.UpdateUser(c.Request.Context(), deviceID, user)
+	if err != nil {
+		h.handleError(c, err)
+		return
+	}
+
+	response := dtos.UserResponse{
+		ID:          updated.ID,
+		Name:        updated.Name,
+		DeviceID:    updated.DeviceID,
+		Phone:       updated.Phone,
+		BackupPhone: updated.BackupPhone,
+	}
+
+	sendResponse(c, http.StatusOK, "user updated successfully", response)
 }
 
 func (h *UserHandler) handleError(c *gin.Context, err error) {
