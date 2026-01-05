@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"net/http"
 
 	"findMyPhone/internal/domain"
@@ -113,8 +114,12 @@ func (h *DeviceHandler) handleError(c *gin.Context, err error) {
 	switch {
 	case errors.Is(err, domain.ErrInvalidInput):
 		sendResponse(c, http.StatusBadRequest, err.Error(), nil)
+	case errors.Is(err, domain.ErrNotFound):
+		sendResponse(c, http.StatusNotFound, "resource not found", nil)
 	case errors.Is(err, domain.ErrConflict):
 		sendResponse(c, http.StatusConflict, "resource conflict", nil)
+	case errors.Is(err, context.Canceled):
+		sendResponse(c, http.StatusRequestTimeout, "request canceled", nil)
 	default:
 		h.logger.Error("internal error", zap.Error(err))
 		sendResponse(c, http.StatusInternalServerError, "internal server error", nil)
