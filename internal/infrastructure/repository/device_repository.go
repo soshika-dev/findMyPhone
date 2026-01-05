@@ -72,3 +72,20 @@ func (r *DeviceRepositoryGorm) UpdateByDeviceID(ctx context.Context, deviceID st
 
 	return &existing, nil
 }
+
+// DeleteByDeviceID removes a device matching the given deviceID.
+func (r *DeviceRepositoryGorm) DeleteByDeviceID(ctx context.Context, deviceID string) error {
+	var existing domain.Device
+	if err := r.db.WithContext(ctx).Where("device_id = ?", deviceID).First(&existing).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return domain.ErrNotFound
+		}
+		return err
+	}
+
+	if err := r.db.WithContext(ctx).Delete(&existing).Error; err != nil {
+		return err
+	}
+
+	return nil
+}

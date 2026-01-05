@@ -27,6 +27,7 @@ func NewDeviceHandler(uc *usecase.DeviceUseCase, logger *zap.Logger) *DeviceHand
 func (h *DeviceHandler) RegisterRoutes(rg *gin.RouterGroup) {
 	rg.POST("/devices", h.createDevice)
 	rg.POST("/devices/:device_id", h.updateDevice)
+	rg.DELETE("/devices/:device_id", h.deleteDevice)
 }
 
 func (h *DeviceHandler) createDevice(c *gin.Context) {
@@ -95,6 +96,17 @@ func (h *DeviceHandler) updateDevice(c *gin.Context) {
 	}
 
 	sendResponse(c, http.StatusOK, "device updated successfully", response)
+}
+
+func (h *DeviceHandler) deleteDevice(c *gin.Context) {
+	deviceID := c.Param("device_id")
+
+	if err := h.uc.DeleteDevice(c.Request.Context(), deviceID); err != nil {
+		h.handleError(c, err)
+		return
+	}
+
+	sendResponse(c, http.StatusOK, "device deleted successfully", nil)
 }
 
 func (h *DeviceHandler) handleError(c *gin.Context, err error) {

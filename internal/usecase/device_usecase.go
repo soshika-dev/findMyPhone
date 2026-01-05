@@ -48,3 +48,12 @@ func (uc *DeviceUseCase) UpdateDevice(ctx context.Context, deviceID string, devi
 
 	return uc.repo.UpdateByDeviceID(ctx, deviceID, device)
 }
+
+// DeleteDevice removes a device by its deviceID.
+func (uc *DeviceUseCase) DeleteDevice(ctx context.Context, deviceID string) error {
+	if deviceID == "" {
+		return domain.ErrInvalidInput
+	}
+
+	return uc.repo.DeleteByDeviceID(ctx, deviceID)
+}
