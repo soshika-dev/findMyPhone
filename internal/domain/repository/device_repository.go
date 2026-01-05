@@ -11,4 +11,5 @@ type DeviceRepository interface {
 	Create(ctx context.Context, device *domain.Device) error
 	GetByDeviceID(ctx context.Context, deviceID string) (*domain.Device, error)
 	UpdateByDeviceID(ctx context.Context, deviceID string, device *domain.Device) (*domain.Device, error)
+	DeleteByDeviceID(ctx context.Context, deviceID string) error
 }
